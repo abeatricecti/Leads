@@ -12,6 +12,55 @@ use Faker\Factory as Faker;
 
 class DatabaseSeeder extends Seeder
 {
+    public function __construct(Lead $lead)
+    {
+        $this->faker = Faker::create();
+    }
+
+    private function arrWithout($arr, $list) {
+        return array_filter($arr, fn ($k) => !in_array($k, $list), ARRAY_FILTER_USE_KEY);
+    }
+
+    //user 1 clicks 3 offers, signs up for 1 - everything matches: ip,useragent,cookies,geo
+    private function createUserOne() {
+        $user = User::factory()->create();
+        $leads = Lead::factory()->count(3)->create([
+            'ip_hash' => $user->ip_hash,
+            'user_agent_hash' => $user->user_agent_hash,
+            'visitor_id' => $user->visitor_id,
+            'visit_id' => $user->visit_id,
+            'city' => $user->city,
+            'state' => $user->state,
+            'zip' => $user->zip,
+        ]);
+
+        $lead = $this->arrWithout($leads[0]->toArray(), ['updated_at', 'created_at', 'id']);
+
+        $lead['conversion_at'] = $lead['redirected_at'] + 240;
+        $conversion = $this->arrWithout($lead, ['redirected_at', 'offer_id']);
+        Conversion::create($conversion);
+    }
+
+    //user 2 clicks 3 offers with cookies disabled and signs up for 1 offer.
+    //maches: ip, geo, user-agent; changes/dont have: attribution_key, visitor_id, visit_id
+    private function createUserTwo() {
+        $user = User::factory()->create();
+        $leads = Lead::factory()->count(3)->create([
+            'ip_hash' => $user->ip_hash,
+            'user_agent_hash' => $user->user_agent_hash,
+            'city' => $user->city,
+            'state' => $user->state,
+            'zip' => $user->zip,
+        ]);
+
+        $conversion = $leads[0]->toArray();
+        $conversion['conversion_at'] = $conversion['redirected_at'] + 300;
+        Conversion::create($this->arrWithout($conversion, [
+            'redirected_at', 'offer_id', 'updated_at', 'created_at', 'id',
+            'attribution_key', 'visitor_id', 'visit_id'
+        ]));
+    }
+
     /**
      * Seed the application's database.
      *
@@ -19,29 +68,7 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        $this->faker = Faker::create();
-
-        //user 1 clicks 3 offers, signs up for 1 - everything matches: ip,useragent,cookies,geo
-        $user1 = User::factory()->create();
-
-        $user1Leads = Lead::factory()->count(3)->create([
-            'ip_hash' => $user1->ip_hash,
-            'user_agent_hash' => $user1->user_agent_hash,
-            'visitor_id' => $user1->visitor_id,
-            'visit_id' => $user1->visit_id,
-            'city' => $user1->city,
-            'state' => $user1->state,
-            'zip' => $user1->zip,
-        ]);
-
-        $lead = array_filter($user1Leads[0]->toArray(), function($k) {
-            return !in_array($k, ['updated_at', 'created_at', 'id']);
-        }, ARRAY_FILTER_USE_KEY);
-
-        $lead['conversion_at'] = $lead['redirected_at'] + 240;
-        unset($lead['redirected_at']);
-        Conversion::create($lead);
-
-        //user 2 clicks 3 offers, changes computers in house, signs up for 1 offer. maches: ip, geo; changes: user-agent, visitor_id, visit_id
+        // $this->createUserOne();
+        $this->createUserTwo();
     }
 }

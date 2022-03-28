@@ -34,7 +34,7 @@ class DatabaseSeeder extends Seeder
             'zip' => $user1->zip,
         ]);
 
-        $lead = array_filter($user1Leads[2]->toArray(), function($k) {
+        $lead = array_filter($user1Leads[0]->toArray(), function($k) {
             return !in_array($k, ['updated_at', 'created_at', 'id']);
         }, ARRAY_FILTER_USE_KEY);
 

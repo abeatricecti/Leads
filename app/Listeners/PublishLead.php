@@ -35,8 +35,6 @@ class PublishLead
         $lead = base64_encode($lead);
 
         $url = "https://buonget459.execute-api.us-east-1.amazonaws.com/live/content/{$event->lead->attribution_key}";
-        $response = Http::put($url, [
-            'enc' => $lead,
-        ]);
+        Http::put($url, ['enc' => $lead]);
     }
 }

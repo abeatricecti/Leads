@@ -61,6 +61,31 @@ class DatabaseSeeder extends Seeder
         ]));
     }
 
+    //user 3 clicks 3 offers, connects to a vpn changing their ip address, and signs up for 1 offer
+    //maches: geo, user-agent, attribution_key, visitor_id, visit_id; changes/dont have: ip 
+    private function createUserThree() {
+        $user = User::factory()->create();
+        $leads = Lead::factory()->count(3)->create([
+            'ip_hash' => $user->ip_hash,
+            'user_agent_hash' => $user->user_agent_hash,
+            'city' => $user->city,
+            'state' => $user->state,
+            'zip' => $user->zip,
+        ]);
+
+        //generate some noise with other leads that match user agent but diff geo
+        $leads = Lead::factory()->count(3)->create([
+            'user_agent_hash' => $user->user_agent_hash,
+        ]);
+
+        $conversion = $leads[0]->toArray();
+        $conversion['conversion_at'] = $conversion['redirected_at'] + 250;
+        Conversion::factory()->create($this->arrWithout($conversion, [
+            'redirected_at', 'offer_id', 'updated_at', 'created_at', 'id',
+            'attribution_key', 'visitor_id', 'visit_id', 'ip_hash'
+        ]));
+    }
+
     /**
      * Seed the application's database.
      *
@@ -69,6 +94,7 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         // $this->createUserOne();
-        $this->createUserTwo();
+        // $this->createUserTwo();
+        $this->createUserThree();
     }
 }

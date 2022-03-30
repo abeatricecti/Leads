@@ -17,8 +17,19 @@ class ConversionFactory extends Factory
      */
     public function definition()
     {
+        $offer = rand(100,500);
+
         return [
-            //
+            'attribution_key' => Str::random(50),
+            'ip_hash' => md5($this->faker->ipv4),
+            'user_agent_hash' => md5($this->faker->UserAgent),
+            'pixel_path' => "/p/{$offer}/LEADID.png",
+            'visitor_id' => Str::random(50),
+            'visit_id' => Str::random(50),
+            'conversion_at' => (string) time() - rand(120,7000),
+            'city' => $this->faker->city,
+            'state' => $this->faker->state,
+            'zip' => $this->faker->postcode,
         ];
     }
 }

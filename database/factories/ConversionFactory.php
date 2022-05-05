@@ -18,11 +18,15 @@ class ConversionFactory extends Factory
     public function definition()
     {
         $offer = rand(100,500);
+        $ip = $this->faker->ipv4;
+        $user_agent = $this->faker->UserAgent;
 
         return [
             'attribution_key' => Str::random(50),
-            'ip_hash' => md5($this->faker->ipv4),
-            'user_agent_hash' => md5($this->faker->UserAgent),
+            'ip_address' => $ip,
+            'ip_hash' => md5($ip),
+            'user_agent' => $user_agent,
+            'user_agent_hash' => md5($user_agent),
             'pixel_path' => "/p/{$offer}/LEADID.png",
             'visitor_id' => Str::random(50),
             'visit_id' => Str::random(50),

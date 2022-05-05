@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('leads', function (Blueprint $table) {
             $table->id();
             $table->string('attribution_key');
+            $table->string('ip_address');
             $table->string('ip_hash');
+            $table->string('user_agent');
             $table->string('user_agent_hash');
             $table->string('pixel_path');
             $table->string('visitor_id');
@@ -26,6 +28,7 @@ return new class extends Migration
             $table->string('state');
             $table->string('zip');
             $table->string('offer_id');
+            $table->string('child_offer_id');
             $table->timestamps();
         });
     }

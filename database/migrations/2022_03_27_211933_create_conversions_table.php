@@ -16,7 +16,9 @@ return new class extends Migration
         Schema::create('conversions', function (Blueprint $table) {
             $table->id();
             $table->string('attribution_key')->nullable();
+            $table->string('ip_address');
             $table->string('ip_hash');
+            $table->string('user_agent');
             $table->string('user_agent_hash');
             $table->string('pixel_path');
             $table->string('visitor_id')->nullable();

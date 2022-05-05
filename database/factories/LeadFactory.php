@@ -18,19 +18,25 @@ class LeadFactory extends Factory
     public function definition()
     {
         $offer = rand(100,500);
+        $child_offer = rand(100,500);
+        $ip = $this->faker->ipv4;
+        $user_agent = $this->faker->UserAgent;
 
         return [
             'attribution_key' => Str::random(50),
-            'ip_hash' => md5($this->faker->ipv4),
-            'user_agent_hash' => md5($this->faker->UserAgent),
-            'pixel_path' => "/p/{$offer}/LEADID.png",
+            'ip_address' => $ip,
+            'ip_hash' => md5($ip),
+            'user_agent' => $user_agent,
+            'user_agent_hash' => md5($user_agent),
+            'pixel_path' => "/p/{$child_offer}/LEADID.png",
             'visitor_id' => Str::random(50),
             'visit_id' => Str::random(50),
             'redirected_at' => (string) time() - rand(120,7000),
             'city' => $this->faker->city,
             'state' => $this->faker->state,
             'zip' => $this->faker->postcode,
-            'offer_id' => $offer
+            'offer_id' => $offer,
+            'child_offer_id' => $child_offer
         ];
     }
 }

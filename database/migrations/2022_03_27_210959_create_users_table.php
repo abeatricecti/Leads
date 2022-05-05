@@ -15,7 +15,9 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
+            $table->string('ip_address');
             $table->string('ip_hash');
+            $table->string('user_agent');
             $table->string('user_agent_hash');
             $table->string('visitor_id');
             $table->string('visit_id');

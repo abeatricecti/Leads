@@ -17,9 +17,14 @@ class UserFactory extends Factory
      */
     public function definition()
     {
+        $ip = $this->faker->ipv4;
+        $user_agent = $this->faker->UserAgent;
+
         return [
-            'ip_hash' => md5($this->faker->ipv4),
-            'user_agent_hash' => md5($this->faker->UserAgent),
+            'ip_address' => $ip,
+            'ip_hash' => md5($ip),
+            'user_agent' => $user_agent,
+            'user_agent_hash' => md5($user_agent),
             'visitor_id' => Str::random(50),
             'visit_id' => Str::random(50),
             'city' => $this->faker->city,

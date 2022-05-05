@@ -25,7 +25,9 @@ class DatabaseSeeder extends Seeder
     private function createUserOne() {
         $user = User::factory()->create();
         $leads = Lead::factory()->count(3)->create([
+            'ip_address' => $user->ip_address,
             'ip_hash' => $user->ip_hash,
+            'user_agent' => $user->user_agent,
             'user_agent_hash' => $user->user_agent_hash,
             'visitor_id' => $user->visitor_id,
             'visit_id' => $user->visit_id,
@@ -34,10 +36,23 @@ class DatabaseSeeder extends Seeder
             'zip' => $user->zip,
         ]);
 
+        //create noise: same user clicked same offer more than once
+        Lead::factory()->create([
+            'ip_address' => $user->ip_address,
+            'ip_hash' => $user->ip_hash,
+            'user_agent' => $user->user_agent,
+            'user_agent_hash' => $user->user_agent_hash,
+            'visitor_id' => $user->visitor_id,
+            'city' => $user->city,
+            'state' => $user->state,
+            'zip' => $user->zip,
+            'pixel_path' => $leads[0]->pixel_path
+        ]);
+
         $lead = $this->arrWithout($leads[0]->toArray(), ['updated_at', 'created_at', 'id']);
 
         $lead['conversion_at'] = $lead['redirected_at'] + 240;
-        $conversion = $this->arrWithout($lead, ['redirected_at', 'offer_id']);
+        $conversion = $this->arrWithout($lead, ['redirected_at', 'offer_id', 'child_offer_id']);
         Conversion::create($conversion);
     }
 
@@ -46,7 +61,9 @@ class DatabaseSeeder extends Seeder
     private function createUserTwo() {
         $user = User::factory()->create();
         $leads = Lead::factory()->count(3)->create([
+            'ip_address' => $user->ip_address,
             'ip_hash' => $user->ip_hash,
+            'user_agent' => $user->user_agent,
             'user_agent_hash' => $user->user_agent_hash,
             'city' => $user->city,
             'state' => $user->state,
@@ -57,7 +74,7 @@ class DatabaseSeeder extends Seeder
         $conversion['conversion_at'] = $conversion['redirected_at'] + 300;
         Conversion::create($this->arrWithout($conversion, [
             'redirected_at', 'offer_id', 'updated_at', 'created_at', 'id',
-            'attribution_key', 'visitor_id', 'visit_id'
+            'attribution_key', 'visitor_id', 'visit_id', 'child_offer_id'
         ]));
     }
 
@@ -66,7 +83,9 @@ class DatabaseSeeder extends Seeder
     private function createUserThree() {
         $user = User::factory()->create();
         $leads = Lead::factory()->count(3)->create([
+            'ip_address' => $user->ip_address,
             'ip_hash' => $user->ip_hash,
+            'user_agent' => $user->user_agent,
             'user_agent_hash' => $user->user_agent_hash,
             'city' => $user->city,
             'state' => $user->state,
@@ -75,6 +94,7 @@ class DatabaseSeeder extends Seeder
 
         //generate some noise with other leads that match user agent but diff geo
         $leads = Lead::factory()->count(3)->create([
+            'user_agent_hash' => $user->user_agent,
             'user_agent_hash' => $user->user_agent_hash,
         ]);
 
@@ -82,7 +102,8 @@ class DatabaseSeeder extends Seeder
         $conversion['conversion_at'] = $conversion['redirected_at'] + 250;
         Conversion::factory()->create($this->arrWithout($conversion, [
             'redirected_at', 'offer_id', 'updated_at', 'created_at', 'id',
-            'attribution_key', 'visitor_id', 'visit_id', 'ip_hash'
+            'attribution_key', 'visitor_id', 'visit_id', 'ip_address', 
+            'ip_hash', 'child_offer_id'
         ]));
     }
 
@@ -93,8 +114,8 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
-        // $this->createUserOne();
-        // $this->createUserTwo();
+        $this->createUserOne();
+        $this->createUserTwo();
         $this->createUserThree();
     }
 }

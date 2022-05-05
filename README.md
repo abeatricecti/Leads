@@ -1,11 +1,13 @@
 # Lead Seeder
 
-## Build
+## Install
 ```
-sail up
+git clone 
+cd Leads
+make build
 ```
 
 ## Seed
 ```
-sail artisan migrate:fresh --seed
+make sail "artisan migrate:fresh --seed"
 ```
